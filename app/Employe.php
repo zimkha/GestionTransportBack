@@ -15,4 +15,9 @@ class Employe extends Model
         'ep_poste',
        
         ];
+
+        public function contrats()
+        { 
+            return $this->hasMany('App\Contrat');
+        }
 }
