@@ -20,4 +20,9 @@ class Employe extends Model
         { 
             return $this->hasMany('App\Contrat');
         }
+
+        public function departements()
+        {
+            return $this->HasMany('App\Departementempl');
+        }
 }

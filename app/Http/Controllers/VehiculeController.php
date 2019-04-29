@@ -15,9 +15,12 @@ class VehiculeController extends Controller
     {
           
          $vehicules = Vehicule::all();
+          $type ;
              foreach ($vehicules as $key) {
-                 dd($key->typevehicule());
+                
+                 $typev = $key->typevehicule;  
              }
+             return $vehicules;
     }
 
     /**

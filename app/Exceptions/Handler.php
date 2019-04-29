@@ -4,6 +4,9 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\Httpkernel\Exception\NotFoundHttpException;
+use \Illuminate\Http\Response;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Handler extends ExceptionHandler
 {
@@ -34,6 +37,9 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
+        if ($exception instanceof ModelNotFoundException) {
+            return response()->json("Erreur la page les données sont introuvale");
+         }
         parent::report($exception);
     }
 
@@ -46,6 +52,9 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof NotFoundHttpException) {
+            return response()->json("Erreur la page ou les données pour acceder a cette page sont introuvable");
+         }
         return parent::render($request, $exception);
     }
 }

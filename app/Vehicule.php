@@ -26,4 +26,8 @@ class Vehicule extends Model
     {
         return $this->belongsTo('App\Typevehicule');
     }
+    public function controles()
+    {
+        return $this->belongsTo('App\Controletechnique');
+    }
 }

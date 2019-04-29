@@ -21,7 +21,6 @@ class CreateEmployesTable extends Migration
             $table->enum('ep_situation_m', ['célibataire', 'marié', 'divorcé']);
             $table->integer('ep_nb_enfants')->nullable();
             $table->string('ep_poste', 30);
-            $table->unsignedInteger('ep_service');  
             $table->mediumText('image')->nullable();      
             $table->timestamps();
         });

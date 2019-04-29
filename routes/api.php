@@ -20,3 +20,8 @@ Route::resource('employe', 'EmployeController');
 Route::resource('vehicule', 'VehiculeController');
 Route::resource('type_vehicule', 'TypevehiculeController');
 Route::resource('contrat', 'ContratController');
+Route::resource('typecontrat', 'TypeContratController');
+Route::resource('conge', 'CongeController');
+Route::resource('type-conge', 'TypecongeController');
+Route::resource('affectation', 'AffectationController');
+Route::resource('controle-technique', 'ControletechniqueController');

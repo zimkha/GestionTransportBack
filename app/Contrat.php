@@ -20,4 +20,9 @@ class Contrat extends Model
      {
          return $this->belongsTo('App\Employe');
      }
+
+     public function  typecontrat()
+     {
+          return $this->belongsTo('App\Typecontrat');
+     }
 }
