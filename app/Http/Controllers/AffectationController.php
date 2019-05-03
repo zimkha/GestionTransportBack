@@ -80,25 +80,24 @@ class AffectationController extends Controller
      */
     public function update(Request $request, $id)
     {
-             $affectation = Affectation::find($id);    
-              if ($affectation) {
+             $affectation = Affectation::findOrfail($id);    
+              if ($affectation) 
+              {
                   // le resultat retourner c'est un true si sa passe sinon c'est false
-                   if($request->employe_id){
-                        $employe = Employe::findOrfail($request->employe_id);
-                           $poste = $this->check_poste($employe->id);
-                            // doit  teste si l'employe est un chaufffeur ou pas
+                   if($request->employe_id && $request->vehicule_id)
+                    {
+                           $employe = Employe::findOrfail($request->employe_id);
+                           $vehicule = Vehicule::findOrfail($request->vehicule_id);
+                             if($this->check_poste($employe->id) == true)
                                 $affectation->employe_id = $employe->id;
-                   }
-                   if($request->vehicule_id){
-                            $vehicule = Vehicule::findOrfail($request->vehicule_id);
-                              $affectation->vehicule_id = $vehicule->id;
-                      }
-                     $result  = $affectation->update($request->all());
-                     return response()->json($result);
+                                $affectation->vehicule_id = $vehicule->id;
+                                $result  = $affectation->update($request->all());
+                           return response()->json($result);
+                    }    
               }
-              else {
-                  return "impossible de trouver cette affectation";
-              }
+              //else {
+                //  return "impossible de trouver cette affectation";
+              //}
                
     }
 
@@ -107,24 +106,33 @@ class AffectationController extends Controller
         return Affectation::destroy($id);
     }
 
+    /**
+     * @param $id
+     * @return boolean 
+     */
     public function check_poste($id)
      {
-         $res = DB::select("SELECT * FROM employes WHERE ep_poste = 'chauffeur'");
+         $res = DB::select("SELECT * FROM employes WHERE ep_poste = 'chauffeur' and id = '$id'");
            if($res!=null)
              return true;
 
         return false;
             
     }
+   /**
+    * @param $idem
+    * @param $idv
+    * @return boolean
+    */
     public function check_statut($idem , $idv)
     {
         $current_date = gmDate("Y-m-d");
           $ok = false;
            $ok_ve = false;
-        $res_emp = DB::select("SELECT * from affectations af where af.employe_id = '$idem' AND af.date_fin_af > '$current_date'");
+        $res_emp = DB::select("SELECT * from affectations af where af.employe_id = '$idem' AND af.date_fin_af > '$current_date' GROUP BY af.employe_id");
           if($res_emp!=null)
                $ok = true;
-          $res_veh = DB::select("SELECT * from affectations af where af.vehicule_id = '$idv' and af.date_fin_af > '$current_date'");
+          $res_veh = DB::select("SELECT * from affectations af where af.vehicule_id = '$idv' and af.date_fin_af > '$current_date' GROUP BY af.vehicule_id");
             if($res_veh!=null)
                 $ok_ve = true;
           
@@ -161,54 +169,24 @@ class AffectationController extends Controller
      * @return \Illimunate\Http\Response
      * 
      */
-    public function getLivraisonAffBydDat($id, $datedebu , $datefin)
+    public function getLivraisonAffBydDat($id, $datedebu , $datefin )
     {
-      //Gere les differents erreurs concernant les dates
-         
-       $affectation = Affectation::findOrfail($id);
+         // cette fonction retourne l'affectation et ses livraisons entre deux dates données
+        // meme si cette affectation n'est plus en cours 
+         $affectation = Affectation::findOrfail($id);
          $vehicule = $affectation->vehicule;
-          $chauffeur = $affectation->employe;
-             $chedateD =$this->validateDate($datedebu);
-              $chek_dateF = $this->validateDate($datefin);
-             
-              if($chedateD && $chek_dateF)
-              {
-                 
-                $message = "Il n'y a pas de de livraison pour ces deux date".$datedebu. "  et ". $datefin;
-                $query = DB::select("SELECT *  FROM livraisons l where l.affectation_id = '$id' and l.created_at BETWEEN '$datedebu' AND '$datefin'");
-              if($query)
-                return response()->json(array($affectation, $query));
-               // return response()->json(array($affectation, $message));
-              }
-              else {
-                return response()->json('erreur');
-              }
+         $chauffeur = $affectation->employe;
+         //Gere les differents erreurs concernant les dates
+         if($this->validateDate($datedebu) == true && $this->validateDate($datefin) == true)
          
-        
+            $livraisons = DB::select("SELECT * FROM livraisons l where l.affectation_id = '$id' AND l.created_at BETWEEN '$datedebu' AND '$datefin'");
+               if($livraisons)
+                  $affectation->livraisons = $livraisons;
+         }
+           return response()->json($affectation);
+
     }
-      public function getchauffeur($datedebu , $datefin)
-      {
-          $chauffeur = Emloye::findOrfail($id);
-            
-                $chedateD =$this->validateDate($datedebu);
-              $chek_dateF = $this->validateDate($datefin);
-                if($chedateD && $chek_dateF)
-                {
-                    // La requete qui permet de recupere l'affectation qui a plus fais 
-                    // Livraisons pour une date 
-                    // donnee
-                     $query = DB::select("SELECT * from affectations af where max(select * from livraisons where l.affectataion_id = af.id and created_at between '$datedebu' ANd '$datefin')");
-                       if($query)
-                       {
-                           $chauffeur = Employe::find($query->id);
-                              $livraions = $chauffeur->livraisons;
-                              return $chauffeur;
-                       }
-                }
-                 else
-                 return response()->json('erreur sur les parametres');
-            
-      }
+
         public function validateDate($date, $format = 'Y-m-d')
             {
                 $d = DateTime::createFromFormat($format, $date);

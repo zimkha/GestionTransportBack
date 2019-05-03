@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
+use App\Commandemarchandise;
 class CommandeMarchandiseController extends Controller
 {
     /**
@@ -13,7 +14,7 @@ class CommandeMarchandiseController extends Controller
      */
     public function index()
     {
-        //
+         return Commandemarchandise::all();
     }
 
     /**
@@ -34,7 +35,8 @@ class CommandeMarchandiseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         $cmdM = Commandemarchandise::create($request->all());
+         return response()->json($cmdM);
     }
 
     /**

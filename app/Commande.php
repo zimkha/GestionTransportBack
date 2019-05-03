@@ -11,4 +11,14 @@ class Commande extends Model
     {
             return $this->belongsTo('App\Client');
     }
+
+    public function marchandisecommander()
+    {
+    	 return hasMany('App\Commandemarchandise');
+    }
+
+    public function client()
+    { 
+    	return $this->belongsTo('App\Client');
+    }
 }
