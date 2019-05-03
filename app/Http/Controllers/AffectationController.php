@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Affectation;
 use App\Vehicule;
 use App\Employe;
+use \DateTime;
 use Illuminate\Support\Facades\DB;
 
 class AffectationController extends Controller
@@ -137,12 +138,12 @@ class AffectationController extends Controller
     }
 
     /**
-     * @param $id
+     * 
      * 
      */
     public function update_statut()
     {
-        // Cette fonction modifi la status des des affectations lorsque la date de 
+        // Cette fonction modifi la status  des affectations lorsque la date de 
         $current_date = gmDate("Y-m-d");
       $tabAff =  DB::select("SELECT * from affectations where date_fin_af = '$current_date'");
          if($tabAff!=null)
@@ -152,4 +153,65 @@ class AffectationController extends Controller
               }
          }
     }
+    /**
+     * 
+     * @param $datedebu
+     * @param $datefin
+     * @param $id
+     * @return \Illimunate\Http\Response
+     * 
+     */
+    public function getLivraisonAffBydDat($id, $datedebu , $datefin)
+    {
+      //Gere les differents erreurs concernant les dates
+         
+       $affectation = Affectation::findOrfail($id);
+         $vehicule = $affectation->vehicule;
+          $chauffeur = $affectation->employe;
+             $chedateD =$this->validateDate($datedebu);
+              $chek_dateF = $this->validateDate($datefin);
+             
+              if($chedateD && $chek_dateF)
+              {
+                 
+                $message = "Il n'y a pas de de livraison pour ces deux date".$datedebu. "  et ". $datefin;
+                $query = DB::select("SELECT *  FROM livraisons l where l.affectation_id = '$id' and l.created_at BETWEEN '$datedebu' AND '$datefin'");
+              if($query)
+                return response()->json(array($affectation, $query));
+               // return response()->json(array($affectation, $message));
+              }
+              else {
+                return response()->json('erreur');
+              }
+         
+        
+    }
+      public function getchauffeur($datedebu , $datefin)
+      {
+          $chauffeur = Emloye::findOrfail($id);
+            
+                $chedateD =$this->validateDate($datedebu);
+              $chek_dateF = $this->validateDate($datefin);
+                if($chedateD && $chek_dateF)
+                {
+                    // La requete qui permet de recupere l'affectation qui a plus fais 
+                    // Livraisons pour une date 
+                    // donnee
+                     $query = DB::select("SELECT * from affectations af where max(select * from livraisons where l.affectataion_id = af.id and created_at between '$datedebu' ANd '$datefin')");
+                       if($query)
+                       {
+                           $chauffeur = Employe::find($query->id);
+                              $livraions = $chauffeur->livraisons;
+                              return $chauffeur;
+                       }
+                }
+                 else
+                 return response()->json('erreur sur les parametres');
+            
+      }
+        public function validateDate($date, $format = 'Y-m-d')
+            {
+                $d = DateTime::createFromFormat($format, $date);
+                return $d && $d->format($format) == $date;
+            }
 }

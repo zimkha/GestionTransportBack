@@ -23,4 +23,11 @@ class Affectation extends Model
     {
         return $this->belongsTo('App\Vehicule');
     }
+
+    public function livraisons()
+    {
+        return $this->hasMany('App\Livraison');
+    }
+
+   
 }

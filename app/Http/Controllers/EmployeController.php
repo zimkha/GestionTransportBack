@@ -69,6 +69,13 @@ class EmployeController extends Controller
             if($employe){
             $contrats = $employe->contrats;
             $dep = $employe->departement;
+             if($employe->ep_poste =="chauffeur"){
+                 $affections = $employe->affectations;
+                    foreach ($affecations as  $value) {
+                        $livraison = $value->livraisons;
+                    }
+                      return $employe;
+             }
               return $employe;
            }else {
               return "cette employer n'existe pas dans la base";
@@ -76,7 +83,7 @@ class EmployeController extends Controller
          
          }
          else{
-           return "le parametre est doit etre un number";
+           return "le parametre  doit etre un number";
          }
          
      }

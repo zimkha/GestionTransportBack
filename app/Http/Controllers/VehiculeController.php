@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Vehicule;
+use Illuminate\Support\Facades\DB;
+
 class VehiculeController extends Controller
 {
     /**
@@ -42,7 +44,16 @@ class VehiculeController extends Controller
     public function store(Request $request)
     { 
           
+        if($request->hasFile('image')){
+            $file = $request->file('image');
+               $extension = $file->getClientOriginalExtension();
+                $filename = time().'.'.$extension;
+                  $file->move('/image/voitures', $filename);
+                    $vehicule->image = $filename;
+                    $vehicule  = Vehicule::create($request->all());
+        }
             $vehicule  = Vehicule::create($request->all());
+              
             return response()->json($vehicule, 201);
     }
 
@@ -98,5 +109,20 @@ class VehiculeController extends Controller
     public function destroy($id)
     {
         return Vehicule::destroy($id);
+    }
+
+    /**
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function vehiculeDisponible()
+    {      $current_date = gmDate("Y-m-d");
+       $query = DB::select("SELECT * FROM vehicules v WHERE v.id not IN( select a.vehicule_id from affectations a where a.date_fin_af <= '$current_date' )");
+         if($query)
+             return response()->json(array('vehicule' => $query));
+        
+             else {
+                 return response()->json('il ya pa de vehicule disponible');
+             }
     }
 }

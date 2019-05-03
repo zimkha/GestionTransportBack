@@ -51,4 +51,9 @@ class ControletechniqueController extends Controller
             return response()->json($controle);
      }
 
+     public function destroy($id)
+     {   
+      Controletechnique::destroy($id);
+     }
+
 }

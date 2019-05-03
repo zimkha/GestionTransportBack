@@ -30,4 +30,9 @@ class Vehicule extends Model
     {
         return $this->belongsTo('App\Controletechnique');
     }
+
+    public function repartions()
+    {
+        return $this->hasMany('App\Reparation');
+    }
 }
