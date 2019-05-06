@@ -15,7 +15,7 @@ class ArtisanCongesTable extends Migration
     {
         Schema::create('conges', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedInteger('employe_id');
+           $table->unsignedInteger('contrat_id');
             $table->unsignedInteger('typeconge_id');
             $table->date('date_debut_conge');
             $table->date('date_fin_conge');

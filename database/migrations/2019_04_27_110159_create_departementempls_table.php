@@ -15,8 +15,8 @@ class CreateDepartementemplsTable extends Migration
     {
         Schema::create('departementempls', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedInteger('employe_id');
             $table->unsignedInteger('departement_id');
+            $table->unsignedInteger('contrat_id');
             $table->timestamps();
         });
     }

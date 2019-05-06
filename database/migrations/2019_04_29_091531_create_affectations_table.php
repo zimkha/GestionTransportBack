@@ -15,7 +15,7 @@ class CreateAffectationsTable extends Migration
     {
         Schema::create('affectations', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedInteger('employe_id');
+            $table->unsignedInteger('contrat_id');
             $table->unsignedInteger('vehicule_id');
             $table->date('date_fin_af');
             $table->boolean('statut');

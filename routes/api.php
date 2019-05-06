@@ -35,3 +35,5 @@ Route::resource('marchandise', 'MarchandiseController');
 Route::get('vehicule/disponible', 'VehiculeController@vehiculeDisponible');
 Route::get('fournisseurs', 'ReceptionController@getFournisseur_more_reception');
 Route::get('reparation-plus-frequent/{dte_debut?}/{dte_fin?}', 'ReparationController@VehiculePlusRepare');
+Route::post('/commande', 'CommandeController@store')->name('commander');
+Route::post('/client', 'ClientController@store');

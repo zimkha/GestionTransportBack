@@ -68,13 +68,14 @@ class EmployeController extends Controller
             $employe = Employe::find($id);
             if($employe){
             $contrats = $employe->contrats;
-            $dep = $employe->departement;
-             if($employe->ep_poste =="chauffeur"){
-                 $affections = $employe->affectations;
-                    foreach ($affecations as  $value) {
-                        $livraison = $value->livraisons;
-                    }
-                      return $employe;
+               $current_contrat = $this->getLastContrat($employe);
+             if($employe->ep_poste =="chauffeur" && $current_contrat){
+                 $affectations = $current_contrat->affectations;
+
+                 return response()->json(array(
+                  'employe' => $employe,
+                  'contrat_courant' => $current_contrat
+                 ));   
              }
               return $employe;
            }else {
@@ -110,4 +111,16 @@ class EmployeController extends Controller
      *   pour la gestions des employes
      * 
      */
+
+    public function getLastContrat(Employe $employe)
+    {
+      $current_date = gmdate('Y-m-d');
+      $query = DB::select("SELECT * from contrats c.id where c.employe_id = '$employe->id' and c.date_fin_contrat > '$current_date'");
+       if($query){
+         $contrat = Contrat::find($query->id);
+         return $contrat;
+       }
+       return  false;
+        
+    }
 }

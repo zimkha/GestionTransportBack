@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Commandemarchandise;
-class CommandeMarchandiseController extends Controller
+
+class ReglementController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +13,7 @@ class CommandeMarchandiseController extends Controller
      */
     public function index()
     {
-         return Commandemarchandise::all();
+        //
     }
 
     /**
@@ -35,8 +34,7 @@ class CommandeMarchandiseController extends Controller
      */
     public function store(Request $request)
     {
-         $cmdM = Commandemarchandise::create($request->all());
-         return response()->json($cmdM);
+        //
     }
 
     /**
@@ -47,9 +45,7 @@ class CommandeMarchandiseController extends Controller
      */
     public function show($id)
     {
-          $commandemarchandise = Commandemarchandise::findOrfail($id);
-          $commande = $commandemarchandise->commande;
-          return response()->json($commandemarchandise);
+        //
     }
 
     /**
@@ -72,9 +68,7 @@ class CommandeMarchandiseController extends Controller
      */
     public function update(Request $request, $id)
     {
-          $commandemarchandise = Commandemarchandise::findOrfail($id);
-          return response()->json($commandemarchandise->update($request->all()));
-          
+        //
     }
 
     /**

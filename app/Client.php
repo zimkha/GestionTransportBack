@@ -10,6 +10,7 @@ class Client extends Model
         'nomcomplet',
         'adresse',
         'telephone',
+        'email',
         'type-client'
     ];
     public function commandes()

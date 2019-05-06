@@ -20,7 +20,7 @@ class CongeController extends Controller
            $day  =$this->daydif($datefin, $current_date);     
          $conges = Conge::all();
            foreach ($conges as $conge) {
-              $employe = $conge->employe; 
+              $contrat = $conge->contrat; 
            }
 
            return $conges;
@@ -36,19 +36,18 @@ class CongeController extends Controller
      public function store(Request $request)
      {
           // Avant d'enregistre un conge il faut une certaine verification concernnt 
-          // l'employe en personne
-           $idempl = $request->employe_id; 
+          // le contrat de l'employe en personne
+           $idcontrat = $request->contrat_id; 
                 $typeconge = Typeconge::findOrfail($request->typeconge_id);
                     $nbmaxejour = $typeconge->tc_nombre_jr_max;
                      if(is_numeric($nbmaxejour)){
                       $day  =$this->daydif($request->date_fin_conge, $request->date_fin_debut);
                          // caste le resulta en nombre;
-
                      }
                       
              $date = date_create();
                $date = date_format('Y-m-d', $date);
-                $query = DB::select("SELECT * from conges c where c.employe_id = $idempl AND c.date_fin_conge > $date");
+                $query = DB::select("SELECT * from conges c where c.contrat_id = $idcontrat AND c.date_fin_conge > $date");
                   if($query!=null)
                   {
                     return Conge::create($request->all());
@@ -107,7 +106,7 @@ class CongeController extends Controller
 
 
      function daydif($dateFin, $datedebut) {
-        $day = DB::select("SELECT DATEDIFF('$dateFin','$datedebut') ");
+          $day = DB::select("SELECT DATEDIFF('$dateFin','$datedebut') ");
           return $day;
   }
 }

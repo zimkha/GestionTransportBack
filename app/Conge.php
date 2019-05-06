@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Conge extends Model
 {
     protected $fillable = [
-        'employe_id',
+        'contrat_id',
         'typeconge_id',
         'date_debut_conge',
         'date_fin_conge',
@@ -15,9 +15,9 @@ class Conge extends Model
         'cg_motifconge'
     ];
 
-    public function employe()
+    public function contrat()
     {
-        return $this->belongsTo('App\Employe');
+        return $this->belongsTo('App\Contrat');
     }
 
     public function typeconge()

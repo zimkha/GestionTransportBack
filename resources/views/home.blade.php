@@ -18,6 +18,14 @@
                 </div>
             </div>
         </div>
+        <div class="container">
+            <form class="form-horizontal" method="post" action="{{ route('commander')}}" >
+                @csrf
+             
+                <input type="hidden" name="client_id" value="1">
+                <button class="btn btn-primary" type="submit">commander</button>
+            </form>
+        </div>
     </div>
 </div>
 @endsection

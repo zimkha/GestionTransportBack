@@ -17,8 +17,5 @@ class Commande extends Model
     	 return hasMany('App\Commandemarchandise');
     }
 
-    public function client()
-    { 
-    	return $this->belongsTo('App\Client');
-    }
+ 
 }

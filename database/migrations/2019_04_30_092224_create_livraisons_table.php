@@ -19,6 +19,7 @@ class CreateLivraisonsTable extends Migration
             $table->unsignedInteger('affectation_id');
             $table->dateTime('date_livraison');
             $table->unsignedInteger('user_id');
+            $table->unsignedInteger('commande_id');
             $table->integer('qte_livre')->nullable();
             $table->timestamps();
         });

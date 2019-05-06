@@ -5,7 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Commande;
 use App\Client;
+use Event;
+use App\Events\RegisterClient;
+use App\Events\RegisterCommande;
 use Illuminate\Support\Facades\DB;
+use App\CommandeMarchandise;
+use App\Listeners\NotificationUserMailListener as lisener; 
 class CommandeController extends Controller
 {
     /**
@@ -28,6 +33,7 @@ class CommandeController extends Controller
         //
     }
 
+
     /**
      * Store a newly created resource in storage.
      *
@@ -36,7 +42,11 @@ class CommandeController extends Controller
      */
     public function store(Request $request)
     {
-        return Commande::create($request->all());
+
+        $commande = Commande::create($request->all());
+       
+       event(new RegisterCommande($request->client_id)) ;
+        return response()->json($commande);
     }
 
     /**
@@ -72,8 +82,16 @@ class CommandeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // si une commande est deja regle alors elle ne peu plus etre modfier cependant
+        // si une commande est deja regle ou elle a déja une livraison,  alors elle ne peu plus etre modfier cependant
         // Elle peur etre supprime par l'administrateur
+        $commande = Commande::findOrfail($id);
+          if($this->checkCommande($commande) != true)
+          
+               return $commande->update($request->all());
+
+          else
+             return response()->json('la commande a déja une livraison');
+
     }
 
     /**
@@ -85,7 +103,11 @@ class CommandeController extends Controller
     public function destroy($id)
     {
         // Seul les admins peuvent acceder a cette action
-         Commande::destroy($id);
+         $commande  = Commande::findOrfail($id);
+          if($this->checkCommande($commande) !=true)
+             return Commande::destroy($id);
+         else 
+            return response()->json("cette commande ne peu pas etre supprime elle es liée a une ou des livraisons ou elle est déj regle");
     }
 
    /**
@@ -97,7 +119,8 @@ class CommandeController extends Controller
     public function getClientPlusCommander($datedebut = null, $datefin = null)
     {
         // cette function retourne le client qui plus commander 
-          $commande= null;
+  
+        $commande= null;
           $_max = 0;
           $_cle;
            // si les deux dates ne sont pas nulls et qu'elles sont valides 
@@ -120,10 +143,7 @@ class CommandeController extends Controller
                           }
                   }
                    $client = Client::find($_cle);
-                   return response()->json(array[
-                    'client' => $client,
-                    'commandes' => $commandes
-                   ]);       
+                   return response()->json($commandes, $client);       
                 }else 
                     return response()->json('pas de livraisons entre ces deux dates');
 
@@ -134,5 +154,20 @@ class CommandeController extends Controller
   {
                 $d = DateTime::createFromFormat($format, $date);
                 return $d && $d->format($format) == $date;
+  }
+  /**
+   *  Cette fonction verifie si la commande a déjà une livraison ou si elle est déja regle
+   *  @param \App\Commande $commane
+   *  @return \Illimunate\Http\Response
+   *
+   */
+  public function checkCommande(Commande $commande)
+  {
+    $livraisons = DB::select("SELECT * FROM livraisons l where l.commande_id = '$commande->id'");
+      if($livraisons)
+
+         return true;
+     else
+        return false;
   }
 }

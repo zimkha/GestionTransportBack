@@ -4,9 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Client;
+
+use App\Events\RegisterCommande;
+use App\Events\RegisterClient;
 use Illuminate\Support\Facades\DB;
 class ClientController extends Controller
 {
+    public function __construct()
+    {
+        
+    }
     /**
      * Display a listing of the resource.
      *
@@ -34,7 +41,10 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-           $client = Client::create($request->all());
+             $client = Client::create($request->all());
+             $client_register = Client::findOrfail($client->id);
+             $id = $client_register->id;
+             event(new RegisterClient($id));
              return response()->json($client); 
     }
 
@@ -47,8 +57,10 @@ class ClientController extends Controller
     public function show($id)
     {
          $client  = Client::find($id);
+         
          if($client){  
              $commandes = $client->commandes;
+              event(new RegisterClient($client->id));
               return response()->json($client);
             }
             else
@@ -115,5 +127,9 @@ class ClientController extends Controller
                   $commandes = $client->commandes;
                    return response()->json($client);
            }
+    }
+    public function getStatforClient(Client $client)
+    {
+       
     }
 }
